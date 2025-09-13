@@ -43,6 +43,13 @@
 pip install hdwallet aiohttp asyncio
 ```
 
+Windows and some Linux/unix
+
+```
+pip install hdwallet==2.2.1 aiohttp
+
+```
+
 ---
 
 ## Usage
