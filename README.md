@@ -63,7 +63,7 @@ python scanner.py
 ### Authorized Research Only
 ```bash
 # Enable live mode ONLY with proper authorization
-TESTMODE=false python scanner.py
+python scanner.py live
 ```
 
 ---
