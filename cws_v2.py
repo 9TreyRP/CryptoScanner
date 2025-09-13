@@ -1,15 +1,14 @@
+# v 1.1.0 faster (async)
 #!/usr/bin/env python3
 import asyncio
 import aiohttp
-import secrets
+import random
 import os
 import time
-from concurrent.futures import ThreadPoolExecutor
 from hdwallet import HDWallet
 from hdwallet.symbols import BTC, ETH
 from dataclasses import dataclass
-from typing import Optional, Dict, Any
-import json
+from typing import Optional
 
 # TESTMODE - Set to False only for authorized testing
 TESTMODE = os.getenv('TESTMODE', 'true').lower() == 'true'
@@ -30,18 +29,16 @@ class Colors:
     BLUE = '\033[94m'
     RESET = '\033[0m'
 
-class WalletScanner:
+class AsyncWalletScanner:
     def __init__(self, max_concurrent_requests: int = 10):
         self.session: Optional[aiohttp.ClientSession] = None
-        self.max_concurrent = max_concurrent_requests
         self.semaphore = asyncio.Semaphore(max_concurrent_requests)
         self.scan_count = 0
         self.found_count = 0
-        self.request_delays = {'btc': 0.5, 'eth': 0.3}  # Rate limiting
         
     async def __aenter__(self):
         timeout = aiohttp.ClientTimeout(total=15, connect=10)
-        connector = aiohttp.TCPConnector(limit=self.max_concurrent, ttl_dns_cache=300)
+        connector = aiohttp.TCPConnector(limit=50, ttl_dns_cache=300)
         self.session = aiohttp.ClientSession(
             timeout=timeout,
             connector=connector,
@@ -53,156 +50,133 @@ class WalletScanner:
         if self.session:
             await self.session.close()
 
-    def generate_secure_private_key(self) -> str:
-        """Generate cryptographically secure private key"""
-        if TESTMODE:
-            # Use deterministic keys for testing
-            return f"{'0' * 63}{self.scan_count % 10}"
-        return secrets.token_hex(32)
+    def clear_screen(self):
+        """Clear the terminal screen based on the operating system."""
+        os.system('cls' if os.name == 'nt' else 'clear')
 
     def generate_wallet_addresses(self, private_key: str) -> WalletInfo:
-        """Generate wallet addresses from private key with error handling"""
-        try:
-            hd_btc = HDWallet(BTC)
-            hd_eth = HDWallet(ETH)
-            
-            hd_btc.from_private_key(private_key)
-            hd_eth.from_private_key(private_key)
-            
-            return WalletInfo(
-                btc_address=hd_btc.p2pkh_address(),
-                eth_address=hd_eth.p2pkh_address(),
-                private_key=private_key
-            )
-        except Exception as e:
-            print(f"{Colors.RED}Error generating wallet: {e}{Colors.RESET}")
-            raise
+        """Generate Bitcoin and Ethereum addresses from a private key - using working method."""
+        hd_btc = HDWallet(BTC)
+        hd_eth = HDWallet(ETH)
+        
+        hd_btc.from_private_key(private_key)
+        hd_eth.from_private_key(private_key)
+        
+        return WalletInfo(
+            btc_address=hd_btc.p2pkh_address(),
+            eth_address=hd_eth.p2pkh_address(),
+            private_key=private_key
+        )
 
     async def get_btc_balance(self, address: str) -> float:
-        """Get Bitcoin balance with rate limiting and error handling"""
+        """Check Bitcoin balance using blockchain API with async."""
         if TESTMODE:
-            return 0.0  # Mock response for testing
+            return 0.0  # Mock response in test mode
             
         async with self.semaphore:
             try:
-                await asyncio.sleep(self.request_delays['btc'])
                 url = f"https://blockchain.info/balance?active={address}"
-                
                 async with self.session.get(url) as response:
                     if response.status == 200:
                         data = await response.json()
-                        return data.get(address, {}).get('final_balance', 0) / 100000000
-                    elif response.status == 429:  # Rate limited
-                        self.request_delays['btc'] *= 1.5  # Increase delay
-                        await asyncio.sleep(2)
-                        
-            except Exception as e:
-                if not TESTMODE:
-                    print(f"{Colors.YELLOW}BTC API error: {str(e)[:50]}...{Colors.RESET}")
-                
+                        return data[address]['final_balance'] / 100000000
+            except Exception:
+                pass
         return 0.0
 
     async def get_eth_balance(self, address: str) -> float:
-        """Get Ethereum balance with rate limiting and error handling"""
+        """Check Ethereum balance using etherscan API with async."""
         if TESTMODE:
-            return 0.0  # Mock response for testing
+            return 0.0  # Mock response in test mode
             
         async with self.semaphore:
             try:
-                await asyncio.sleep(self.request_delays['eth'])
                 url = f"https://api.etherscan.io/api?module=account&action=balance&address={address}&tag=latest"
-                
                 async with self.session.get(url) as response:
                     if response.status == 200:
                         data = await response.json()
-                        if data.get('status') == '1':
-                            return int(data.get('result', 0)) / 10**18
-                    elif response.status == 429:  # Rate limited
-                        self.request_delays['eth'] *= 1.5
-                        await asyncio.sleep(2)
-                        
-            except Exception as e:
-                if not TESTMODE:
-                    print(f"{Colors.YELLOW}ETH API error: {str(e)[:50]}...{Colors.RESET}")
-                
+                        if data['status'] == '1':
+                            return int(data['result']) / 10**18
+            except Exception:
+                pass
         return 0.0
 
-    async def check_wallet(self, wallet: WalletInfo) -> WalletInfo:
-        """Check wallet balances concurrently"""
+    async def check_wallet_balances(self, wallet: WalletInfo) -> WalletInfo:
+        """Check both BTC and ETH balances concurrently."""
         btc_task = asyncio.create_task(self.get_btc_balance(wallet.btc_address))
         eth_task = asyncio.create_task(self.get_eth_balance(wallet.eth_address))
         
-        wallet.btc_balance, wallet.eth_balance = await asyncio.gather(
-            btc_task, eth_task, return_exceptions=False
-        )
-        
+        wallet.btc_balance, wallet.eth_balance = await asyncio.gather(btc_task, eth_task)
         return wallet
 
-    def save_found_wallet(self, wallet: WalletInfo) -> None:
-        """Save wallet with balance to file"""
+    def save_found_wallet(self, wallet: WalletInfo):
+        """Save wallet with balance to file."""
         if TESTMODE:
-            return  # Don't save in test mode
+            print(f"{Colors.GREEN}[TEST MODE] Would save wallet to file{Colors.RESET}")
+            return
             
         try:
             with open('found_wallets.txt', 'a', encoding='utf-8') as f:
                 timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
                 f.write(f"[{timestamp}] FOUND WALLET\n")
-                f.write(f"BTC: {wallet.btc_address} - Balance: {wallet.btc_balance:.8f}\n")
-                f.write(f"ETH: {wallet.eth_address} - Balance: {wallet.eth_balance:.8f}\n")
+                f.write(f"BTC: {wallet.btc_address} - Balance: {wallet.btc_balance}\n")
+                f.write(f"ETH: {wallet.eth_address} - Balance: {wallet.eth_balance}\n")
                 f.write(f"Private Key: {wallet.private_key}\n")
                 f.write("-" * 70 + "\n")
-        except IOError as e:
-            print(f"{Colors.RED}Error saving wallet: {e}{Colors.RESET}")
+        except Exception as e:
+            print(f"{Colors.RED}Error saving: {e}{Colors.RESET}")
 
-    def display_banner(self) -> None:
-        """Display program banner with test mode warning"""
-        mode_text = f"{Colors.YELLOW}[TEST MODE - SAFE]{Colors.RESET}" if TESTMODE else f"{Colors.RED}[LIVE MODE - USE RESPONSIBLY]{Colors.RESET}"
+    def display_banner(self):
+        """Display the program banner."""
+        mode_text = f"{Colors.GREEN}[TEST MODE - SAFE]{Colors.RESET}" if TESTMODE else f"{Colors.RED}[LIVE MODE]{Colors.RESET}"
         
         banner = f"""
-{Colors.GREEN}********************* Cryptocurrency Wallet Scanner v1.1 *********************
-*                                                                      *
-*    Optimized async scanner for Bitcoin and Ethereum wallets         *
-*    {mode_text.ljust(50)} *
-*    {hdwallet_status.ljust(50)} *
-*    Rate-limited requests with concurrent processing                  *
-*                                                                      *
-***********************************************************************{Colors.RESET}
-"""
+    {Colors.GREEN}********************* Async Cryptocurrency Wallet Scanner ******************
+    *                                                                      *
+    *    Check Bitcoin and Ethereum addresses for balances (ASYNC)        *
+    *    {mode_text.ljust(50)} *
+    *    Generated wallets checked against blockchain APIs concurrently    *
+    *    Any address with balance > 0 is saved to found_wallets.txt        *
+    *                                                                      *
+    ***********************************************************************{Colors.RESET}
+    """
         print(banner)
 
-    def display_results(self, wallet: WalletInfo) -> None:
-        """Display scan results"""
-        os.system('cls' if os.name == 'nt' else 'clear')
+    def display_results(self, wallet: WalletInfo):
+        """Display scan results in the original style."""
+        self.clear_screen()
         self.display_banner()
         
-        print(f"{Colors.RED}{'='*22}[{Colors.WHITE}Scanned:{Colors.YELLOW} {self.scan_count:,} "
-              f"{Colors.WHITE}Found:{Colors.GREEN} {self.found_count}{Colors.RED}]{'='*22}{Colors.RESET}")
+        print(f"{Colors.RED}{'='*24}[{Colors.WHITE}Scan:{Colors.YELLOW} {self.scan_count:,} "
+              f"{Colors.WHITE}Found:{Colors.GREEN} {self.found_count}{Colors.RED}]{'='*24}{Colors.RESET}")
         
-        btc_color = Colors.GREEN if wallet.btc_balance > 0 else Colors.WHITE
-        eth_color = Colors.GREEN if wallet.eth_balance > 0 else Colors.WHITE
+        btc_color = Colors.GREEN if wallet.btc_balance > 0 else Colors.YELLOW
+        eth_color = Colors.GREEN if wallet.eth_balance > 0 else Colors.YELLOW
         
-        print(f"  | BTC {Colors.BLUE}P2PKH{Colors.RESET} | "
-              f"BAL: {btc_color}{wallet.btc_balance:.8f}{Colors.RESET} | {wallet.btc_address}")
+        print(f"        | BTC Address {Colors.RED}(P2PKH) {Colors.RESET} | "
+              f"BAL: {btc_color}{wallet.btc_balance:.8f}{Colors.RESET} | {Colors.WHITE}{wallet.btc_address}{Colors.RESET}")
         
-        print(f"  | ETH {Colors.BLUE}Addr {Colors.RESET} | "
-              f"BAL: {eth_color}{wallet.eth_balance:.8f}{Colors.RESET} | {wallet.eth_address}")
+        print(f"        | ETH Address {Colors.RED}(ETH)   {Colors.RESET} | "
+              f"BAL: {eth_color}{wallet.eth_balance:.8f}{Colors.RESET} | {Colors.WHITE}{wallet.eth_address}{Colors.RESET}")
         
-        print(f"  | Private Key | {Colors.RED}{wallet.private_key}{Colors.RESET}")
-        print(f"  {Colors.RED}{'='*75}{Colors.RESET}")
+        print(f"        | Private Key {Colors.RED}(HEX)   {Colors.RESET} | {Colors.RED}{wallet.private_key}{Colors.RESET}")
+        print(f"        {Colors.RED}{'='*70}{Colors.RESET}")
         
         if wallet.btc_balance > 0 or wallet.eth_balance > 0:
             print(f"{Colors.GREEN}*** WALLET WITH BALANCE FOUND! ***{Colors.RESET}")
 
-    async def run_scan(self, target_scans: Optional[int] = None) -> None:
-        """Main scanning loop"""
+    async def run_scan(self):
+        """Main scanning loop - async version of your working code."""
         try:
-            while target_scans is None or self.scan_count < target_scans:
-                # Generate wallet
-                private_key = self.generate_secure_private_key()
+            while True:
+                # Generate a random private key (same method as original)
+                private_key = "".join(random.choice("0123456789abcdef") for _ in range(64))
+                
+                # Generate wallet addresses using your working method
                 wallet = self.generate_wallet_addresses(private_key)
                 
-                # Check balances
-                wallet = await self.check_wallet(wallet)
+                # Check balances concurrently (this is the async improvement)
+                wallet = await self.check_wallet_balances(wallet)
                 
                 self.scan_count += 1
                 
@@ -211,49 +185,49 @@ class WalletScanner:
                     self.found_count += 1
                     self.save_found_wallet(wallet)
                 
-                # Display results
+                # Display results in original format
                 self.display_results(wallet)
                 
-                # Adaptive delay based on API response times
+                # Small delay to avoid overwhelming APIs (reduced from 1 second)
                 if not TESTMODE:
-                    base_delay = max(self.request_delays.values())
-                    await asyncio.sleep(min(base_delay * 0.5, 0.1))  # Minimum delay
+                    await asyncio.sleep(0.3)
+                else:
+                    await asyncio.sleep(0.1)  # Faster in test mode
                     
         except KeyboardInterrupt:
-            print(f"\n{Colors.YELLOW}Scan interrupted. Total: {self.scan_count:,}, Found: {self.found_count}{Colors.RESET}")
-        except Exception as e:
-            print(f"{Colors.RED}Scan error: {e}{Colors.RESET}")
+            print(f"\n{Colors.YELLOW}Scan interrupted by user. Total scanned: {self.scan_count:,}, Found: {self.found_count}{Colors.RESET}")
 
 async def main():
-    """Main entry point"""
+    """Main entry point."""
     if TESTMODE:
-        print(f"{Colors.GREEN}✓ Running in TEST MODE - Safe mock addresses only{Colors.RESET}")
+        print(f"{Colors.GREEN}✓ Running in TEST MODE - Mock responses, no live API calls{Colors.RESET}")
     else:
-        print(f"{Colors.RED}⚠ LIVE MODE - Real API calls enabled{Colors.RESET}")
+        print(f"{Colors.RED}⚠ LIVE MODE - Real blockchain API calls enabled{Colors.RESET}")
     
     time.sleep(1)
     
-    async with WalletScanner(max_concurrent_requests=15) as scanner:
+    async with AsyncWalletScanner(max_concurrent_requests=10) as scanner:
         await scanner.run_scan()
 
-# Windows PowerShell environment variable handling
 def set_testmode():
-    """Handle TESTMODE setting for Windows"""
+    """Handle TESTMODE setting for Windows users."""
     global TESTMODE
-    
-    # Check command line args for Windows users
     import sys
+    
     if len(sys.argv) > 1:
-        if sys.argv[1].lower() in ['live', 'false', 'real']:
+        arg = sys.argv[1].lower()
+        if arg in ['live', 'false', 'real']:
             TESTMODE = False
-            print(f"{Colors.RED}TESTMODE disabled via command line argument{Colors.RESET}")
-        elif sys.argv[1].lower() in ['test', 'true', 'safe']:
+            print(f"{Colors.RED}TESTMODE disabled via argument{Colors.RESET}")
+        elif arg in ['test', 'true', 'safe']:
             TESTMODE = True
-            print(f"{Colors.GREEN}TESTMODE enabled via command line argument{Colors.RESET}")
+            print(f"{Colors.GREEN}TESTMODE enabled via argument{Colors.RESET}")
 
 if __name__ == "__main__":
     try:
         set_testmode()
+        print("Starting async scanner...")
+        time.sleep(1)
         asyncio.run(main())
     except KeyboardInterrupt:
         print(f"\n{Colors.YELLOW}Program terminated by user{Colors.RESET}")
