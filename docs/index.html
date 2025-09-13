@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoScanner - Cryptocurrency Wallet Scanner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .max-w-75 {
+            max-width: 75%;
+        }
+        .gradient-border {
+            position: relative;
+        }
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 0.5rem;
+            padding: 1px;
+            background: linear-gradient(135deg, #e5e7eb, #9ca3af);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <noscript>
+        <div class="fixed inset-0 bg-white z-50 flex items-center justify-center p-8">
+            <div class="text-center max-w-md">
+                <div class="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                    <i data-feather="alert-triangle" class="text-red-500 w-8 h-8"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">JavaScript Required</h2>
+                <p class="text-gray-600 mb-6">This application requires JavaScript to function properly. Please enable JavaScript in your browser settings.</p>
+                <a href="https://www.enable-javascript.com/" target="_blank" class="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-700 transition-colors">
+                    <i data-feather="external-link" class="mr-2 w-4 h-4"></i>
+                    How to enable JavaScript
+                </a>
+            </div>
+        </div>
+    </noscript>
+
+    <div class="min-h-screen flex flex-col mx-auto max-w-75">
+        <!-- Header -->
+        <header class="py-6 border-b border-gray-200 bg-white">
+            <div class="container mx-auto px-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i data-feather="shield" class="w-8 h-8 text-gray-900"></i>
+                    <h1 class="text-2xl font-bold text-gray-900">CryptoScanner</h1>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#features" class="text-gray-600 hover:text-gray-900 transition-colors">Features</a>
+                    <a href="#usage" class="text-gray-600 hover:text-gray-900 transition-colors">Usage</a>
+                    <a href="#security" class="text-gray-600 hover:text-gray-900 transition-colors">Security</a>
+                    <a href="#legal" class="text-gray-600 hover:text-gray-900 transition-colors">Legal</a>
+                </nav>
+                <a href="https://github.com/VolkanSah/CryptoScanner" target="_blank" class="flex items-center space-x-2 bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors">
+                    <i data-feather="github" class="w-5 h-5"></i>
+                    <span>GitHub</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 mb-10 md:mb-0">
+                        <h2 class="text-4xl font-bold text-gray-900 mb-4">Cryptocurrency Wallet Scanner</h2>
+                        <p class="text-xl text-gray-600 mb-6">A responsible security-research demonstration tool for identifying wallet vulnerabilities with async scanning patterns.</p>
+                        <div class="flex space-x-4">
+                            <a href="#usage" class="bg-gray-900 text-white px-6 py-3 rounded-md hover:bg-gray-700 transition-colors">Get Started</a>
+                            <a href="https://github.com/VolkanSah/CryptoScanner" target="_blank" class="flex items-center text-gray-900 px-6 py-3 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">
+                                <i data-feather="github" class="mr-2 w-5 h-5"></i>
+                                View on GitHub
+                            </a>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2">
+                        <div class="gradient-border p-1 rounded-lg bg-white">
+                            <div class="bg-gray-50 p-6 rounded-lg">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                                    <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+                                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                </div>
+                                <div class="bg-gray-900 text-green-400 font-mono text-sm p-4 rounded overflow-x-auto">
+                                    <span class="text-gray-500">$</span> python scanner.py<br>
+                                    <span class="text-gray-500">>></span> <span class="text-white">Initializing in TESTMODE (safe)</span><br>
+                                    <span class="text-gray-500">>></span> <span class="text-white">Generating 1000 test wallets...</span><br>
+                                    <span class="text-gray-500">>></span> <span class="text-white">Scanning complete: 0 vulnerabilities found</span><br>
+                                    <span class="text-gray-500">>></span> <span class="text-white">Memory usage: 42MB</span><br>
+                                    <span class="text-gray-500">>></span> <span class="text-white">Execution time: 1.8s</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="py-16 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Technical Features</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <i data-feather="zap" class="w-6 h-6 text-gray-900"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Async Architecture</h3>
+                        <p class="text-gray-600">10-15x faster than traditional sequential scanning with concurrent wallet generation and balance checking.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <i data-feather="shield" class="w-6 h-6 text-gray-900"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Secure Defaults</h3>
+                        <p class="text-gray-600">TESTMODE enabled by default with mock responses to prevent accidental live network calls.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <i data-feather="activity" class="w-6 h-6 text-gray-900"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Rate Limiting</h3>
+                        <p class="text-gray-600">Adaptive delays prevent API throttling with semaphore-controlled concurrent requests (default: 15).</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <i data-feather="cpu" class="w-6 h-6 text-gray-900"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Connection Pooling</h3>
+                        <p class="text-gray-600">Efficient HTTP connection reuse with aiohttp reduces overhead by ~60%.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <i data-feather="key" class="w-6 h-6 text-gray-900"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Secure RNG</h3>
+                        <p class="text-gray-600">Cryptographically secure private key generation using Python's secrets module.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <i data-feather="alert-octagon" class="w-6 h-6 text-gray-900"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Error Recovery</h3>
+                        <p class="text-gray-600">Graceful handling of API failures and network issues without crashing the scanning process.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Usage Section -->
+        <section id="usage" class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Usage</h2>
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <div class="lg:w-1/2">
+                        <div class="bg-gray-50 p-6 rounded-lg mb-8">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Safe Testing (Default)</h3>
+                            <div class="bg-gray-900 text-green-400 font-mono text-sm p-4 rounded overflow-x-auto">
+                                <span class="text-gray-500"># Run in test mode (safe - no live API calls)</span><br>
+                                python scanner.py
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Authorized Research Only</h3>
+                            <div class="bg-gray-900 text-green-400 font-mono text-sm p-4 rounded overflow-x-auto">
+                                <span class="text-gray-500"># Enable live mode ONLY with proper authorization</span><br>
+                                TESTMODE=false python scanner.py
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:w-1/2">
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Configuration Options</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-2">Environment Variables</h4>
+                                    <ul class="text-gray-600 space-y-2">
+                                        <li><span class="font-mono bg-gray-200 px-2 py-1 rounded">TESTMODE</span>: Set to false to enable live API calls (default: true)</li>
+                                        <li><span class="font-mono bg-gray-200 px-2 py-1 rounded">MAX_CONCURRENT</span>: Maximum concurrent requests (default: 15)</li>
+                                        <li><span class="font-mono bg-gray-200 px-2 py-1 rounded">BTC_DELAY</span>: Minimum delay between BTC API calls (default: 0.5s)</li>
+                                        <li><span class="font-mono bg-gray-200 px-2 py-1 rounded">ETH_DELAY</span>: Minimum delay between ETH API calls (default: 0.3s)</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-2">Advanced Usage</h4>
+                                    <div class="bg-gray-900 text-green-400 font-mono text-sm p-4 rounded overflow-x-auto">
+                                        <span class="text-gray-500"># Custom scanner configuration</span><br>
+                                        async with WalletScanner(max_concurrent_requests=10) as scanner:<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;await scanner.run_scan(target_scans=1000)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security Section -->
+        <section id="security" class="py-16 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Security Features</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Responsible Disclosure Process</h3>
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2">
+                            <li><span class="font-medium">Do not publish details.</span> Keep findings confidential.</li>
+                            <li>Prepare a short private report with issue summary, affected components, and suggested mitigations.</li>
+                            <li>Send the report privately to the operator with a reasonable deadline (e.g. 30 days).</li>
+                            <li>Offer to coordinate remediation or provide further guidance.</li>
+                            <li>If acknowledged and fixed, optionally coordinate a public, non-technical disclosure.</li>
+                        </ol>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Remediation Checklist</h3>
+                        <ul class="text-gray-600 space-y-2">
+                            <li class="flex items-start">
+                                <i data-feather="check" class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                <span>Require API keys, OAuth, or mTLS for endpoints</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i data-feather="check" class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                <span>Implement both global and per-IP throttling</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i data-feather="check" class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                <span>Sanitize all inputs; treat addresses as untrusted</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i data-feather="check" class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                <span>Never expose private keys via APIs or logs</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i data-feather="check" class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                <span>Enforce TLS, HSTS, and strict CSP</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Legal Section -->
+        <section id="legal" class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Legal & Ethical Reminder</h2>
+                <div class="max-w-3xl mx-auto">
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+                        <div class="flex items-start">
+                            <i data-feather="alert-triangle" class="w-6 h-6 text-red-500 mr-3 mt-0.5 flex-shrink-0"></i>
+                            <div>
+                                <h3 class="text-lg font-semibold text-red-800 mb-2">Important Notice</h3>
+                                <p class="text-red-700">You are responsible for how you use the materials in this repository. Running active scans or attempting to extract funds from third-party wallets is illegal in many jurisdictions and will not be supported.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-green-800 mb-3">This tool is designed for:</h3>
+                            <ul class="text-green-700 space-y-2">
+                                <li class="flex items-start">
+                                    <i data-feather="check-circle" class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    <span>Security research with proper authorization</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="check-circle" class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    <span>Educational purposes in controlled environments</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="check-circle" class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    <span>Testing your own infrastructure</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="check-circle" class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    <span>Demonstrating async programming patterns</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-red-800 mb-3">This tool is NOT for:</h3>
+                            <ul class="text-red-700 space-y-2">
+                                <li class="flex items-start">
+                                    <i data-feather="x-circle" class="w-4 h-4 text-red-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    <span>Scanning third-party wallets without permission</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="x-circle" class="w-4 h-4 text-red-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    <span>Attempting to extract funds</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="x-circle" class="w-4 h-4 text-red-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    <span>Bypassing security measures</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="x-circle" class="w-4 h-4 text-red-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    <span>Any form of financial fraud or theft</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-8 text-center text-gray-600">
+                        <p>Copyright © Volkan Kücükbudak</p>
+                        <p class="mt-2 italic">Remember: With great power comes great responsibility. Use this tool ethically and legally.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="py-8 border-t border-gray-200 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                        <i data-feather="shield" class="w-6 h-6 text-gray-900"></i>
+                        <span class="text-gray-900 font-medium">CryptoScanner</span>
+                    </div>
+                    <div class="flex space-x-6">
+                        <a href="https://github.com/VolkanSah/CryptoScanner" target="_blank" class="text-gray-600 hover:text-gray-900 transition-colors">
+                            <i data-feather="github" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-6 text-center text-gray-500 text-sm">
+                    <p>This repository is published for research and education only. By using this repository you agree NOT to use it for harming or defrauding others.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>
