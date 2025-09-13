@@ -131,14 +131,14 @@ class AsyncWalletScanner:
         mode_text = f"{Colors.GREEN}[TEST MODE - SAFE]{Colors.RESET}" if TESTMODE else f"{Colors.RED}[LIVE MODE]{Colors.RESET}"
         
         banner = f"""
-    {Colors.GREEN}********************* Async Cryptocurrency Wallet Scanner ******************
+    {Colors.GREEN}******* Async Cryptocurrency Wallet Scanner **************
     *                                                                      *
-    *    Check Bitcoin and Ethereum addresses for balances (ASYNC)        *
-    *    {mode_text.ljust(50)} *
+    *    Check Bitcoin and Ethereum addresses for balances (ASYNC)         *
+    *    {mode_text.ljust(50)}                                             *
     *    Generated wallets checked against blockchain APIs concurrently    *
     *    Any address with balance > 0 is saved to found_wallets.txt        *
     *                                                                      *
-    ***********************************************************************{Colors.RESET}
+    ************************************************************************{Colors.RESET}
     """
         print(banner)
 
