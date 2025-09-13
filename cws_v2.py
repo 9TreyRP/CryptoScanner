@@ -1,4 +1,5 @@
 # v 1.1.0 faster (async)
+# Volkan Kücükbudak
 #!/usr/bin/env python3
 import asyncio
 import aiohttp
