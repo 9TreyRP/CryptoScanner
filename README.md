@@ -1,6 +1,6 @@
 # CryptoScanner (dev)
 ##### Cryptocurrency  Wallet Scanner
-###### bricked,sorry
+###### 
 
 > **Purpose:** This repository is a *responsible security-research demonstration* and **must not** be used to attack, defraud, or coerce third parties. The goal is to help operators identify weaknesses and fix them — not to exploit or extort.
 
