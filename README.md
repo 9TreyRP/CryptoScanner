@@ -1,4 +1,4 @@
-# CryptoScanner (dev)
+# CryptoScanner
 ##### Cryptocurrency  Wallet Scanner
 ###### 
 
